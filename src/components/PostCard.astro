@@ -1,0 +1,48 @@
+---
+/**
+ * Material 3 card for one post. The title link is stretched over the card, so the
+ * whole card is one target; md-ripple and md-focus-ring attach to that link by id.
+ * Variants follow the card spec: elevated (surface-container-low, level 1),
+ * filled (surface-container-highest), outlined (surface + outline-variant).
+ */
+import type { PostSummary } from '@mintfolio/core/theme';
+import Image from '@mintfolio/core/components/Image.astro';
+import Icon from './Icon.astro';
+import { domId, formatDate } from '../lib/format';
+interface Props {
+  post: PostSummary;
+  variant?: 'elevated' | 'filled' | 'outlined';
+  /** "feature" places large media beside the text on wide windows. */
+  layout?: 'feature' | 'list';
+  heading?: 'h2' | 'h3';
+  /** Distinguishes cards for the same post in different sections of one page. */
+  context: string;
+  language?: string;
+  timezone?: string;
+}
+const { post, variant = 'outlined', layout = 'list', heading: Heading = 'h3', context, language, timezone } = Astro.props;
+const linkId = domId(`card-${context}`, post.id);
+---
+<article class:list={['md-card', `md-card--${variant}`, 'post-card', `post-card--${layout}`, { 'post-card--with-media': post.cover }]}>
+  <md-elevation aria-hidden="true"></md-elevation>
+  <md-focus-ring for={linkId} aria-hidden="true"></md-focus-ring>
+  <md-ripple for={linkId} aria-hidden="true"></md-ripple>
+  {post.cover && <div class="post-card__media">
+    <Image src={post.cover} alt="" width={layout === 'feature' ? 960 : 480} height={layout === 'feature' ? 640 : 320} loading={layout === 'feature' ? 'eager' : 'lazy'} />
+  </div>}
+  <div class="post-card__body">
+    <p class="post-card__overline md-typescale-label-medium">
+      <span class="post-card__category">{post.category.label}</span>
+      <span aria-hidden="true">·</span>
+      <time datetime={post.publishedAt}>{formatDate(post.publishedAt, language, timezone)}</time>
+      {post.pinned && <span class="post-card__flag"><Icon name="keep" />置顶</span>}
+      {post.protected && <span class="post-card__flag"><Icon name="lock" />加密</span>}
+      {post.preview && <span class="post-card__flag">本地预览</span>}
+    </p>
+    <Heading class:list={['post-card__title', layout === 'feature' ? 'md-typescale-headline-small' : 'md-typescale-title-large']}>
+      <a id={linkId} href={post.url} class="post-card__link">{post.title}</a>
+    </Heading>
+    {post.description && <p class="post-card__supporting md-typescale-body-medium">{post.description}</p>}
+    {post.readingMinutes !== undefined && <p class="post-card__meta md-typescale-label-medium"><Icon name="schedule" />{post.readingMinutes} 分钟阅读</p>}
+  </div>
+</article>

@@ -1,0 +1,30 @@
+---
+/**
+ * Material 3 common button rendered as a real link, so it works without JavaScript.
+ * State layer, ripple and focus ring are the official @material/web primitives
+ * (md-ripple, md-focus-ring), attached to this element once scripts load.
+ */
+import Icon from './Icon.astro';
+import type { IconName } from '../lib/icons';
+interface Props {
+  href: string;
+  variant?: 'filled' | 'tonal' | 'outlined' | 'text' | 'elevated';
+  /** Any Material Symbol name; common ones are bundled. */
+  icon?: IconName | (string & {});
+  /** Simple Icons slug for a brand logo in the leading slot; takes precedence over `icon`. */
+  brand?: string;
+  trailingIcon?: IconName;
+  class?: string;
+  rel?: string;
+}
+const { href, variant = 'filled', icon, brand, trailingIcon, class: className, rel } = Astro.props;
+const leading = Boolean(icon || brand);
+---
+<a href={href} rel={rel} class:list={['md-button', `md-button--${variant}`, { 'md-button--with-icon': leading, 'md-button--with-trailing-icon': trailingIcon }, className]}>
+  {variant === 'elevated' && <md-elevation aria-hidden="true"></md-elevation>}
+  <md-focus-ring aria-hidden="true"></md-focus-ring>
+  <md-ripple aria-hidden="true"></md-ripple>
+  {leading && <Icon name={icon} brand={brand} />}
+  <span class="md-button__label"><slot /></span>
+  {trailingIcon && <Icon name={trailingIcon} />}
+</a>

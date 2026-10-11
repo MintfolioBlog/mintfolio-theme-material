@@ -1,0 +1,73 @@
+/*
+ * Markdown body. Sizes come from the typescale (body-large for text, headline /
+ * title styles for headings). Line height is raised from body-large's 24/16 to
+ * 1.85: Chinese long-form text needs more leading than Latin UI text.
+ * Wide code, tables and URLs scroll on their own; the page never does.
+ */
+.prose {
+  font: 400 var(--md-sys-typescale-body-large-size, 1rem) / 1.85 var(--md-ref-typeface-plain);
+  letter-spacing: 0.009375rem;
+  color: var(--md-sys-color-on-surface);
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.prose > * + * { margin-top: 1.25em; }
+.prose :is(h2, h3, h4) { scroll-margin-top: calc(var(--top-app-bar-height) + 16px); color: var(--md-sys-color-on-surface); }
+.prose h2 { margin-top: 2em; font: 400 var(--md-sys-typescale-headline-small-size, 1.5rem) / var(--md-sys-typescale-headline-small-line-height, 2rem) var(--md-ref-typeface-brand); }
+.prose h3 { margin-top: 1.75em; font: 400 var(--md-sys-typescale-title-large-size, 1.375rem) / var(--md-sys-typescale-title-large-line-height, 1.75rem) var(--md-ref-typeface-brand); }
+.prose h4 { margin-top: 1.5em; font: 500 var(--md-sys-typescale-title-medium-size, 1rem) / var(--md-sys-typescale-title-medium-line-height, 1.5rem) var(--md-ref-typeface-plain); letter-spacing: 0.009375rem; }
+.prose :is(h2, h3, h4) + * { margin-top: 0.75em; }
+.prose :is(ul, ol) { padding-inline-start: 1.5em; }
+.prose li + li { margin-top: 0.4em; }
+.prose li::marker { color: var(--md-sys-color-primary); }
+.prose a { color: var(--md-sys-color-primary); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.prose a:hover { text-decoration-thickness: 2px; }
+.prose strong { font-weight: 700; }
+.prose blockquote {
+  margin-inline: 0; padding: 16px 20px;
+  border-radius: var(--md-sys-shape-corner-large);
+  background: var(--md-sys-color-surface-container-low);
+  color: var(--md-sys-color-on-surface-variant);
+  box-shadow: inset 4px 0 0 var(--md-sys-color-primary);
+}
+.prose blockquote > * + * { margin-top: 0.75em; }
+.prose code { font-family: var(--md-ref-typeface-mono); font-size: 0.9em; }
+.prose :not(pre) > code {
+  padding: 0.1em 0.4em; border-radius: var(--md-sys-shape-corner-extra-small);
+  background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);
+}
+/* Core highlights with Shiki, whose inline background and token colors are designed
+   together; keep them and only apply Material shape and spacing. */
+.prose pre {
+  max-width: 100%; overflow-x: auto; padding: 16px 20px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  font-size: 0.875rem; line-height: 1.7; tab-size: 2;
+}
+.prose pre code { font-size: inherit; }
+.prose img { border-radius: var(--md-sys-shape-corner-large); }
+.prose figure { max-width: 100%; }
+.prose figcaption { margin-top: 8px; font: 400 0.75rem/1rem var(--md-ref-typeface-plain); letter-spacing: 0.025rem; color: var(--md-sys-color-on-surface-variant); }
+.prose iframe { width: 100%; border: 0; border-radius: var(--md-sys-shape-corner-large); }
+.prose hr { border: 0; height: 1px; background: var(--md-sys-color-outline-variant); margin-block: 2em; }
+.prose table { width: 100%; border-collapse: collapse; display: block; max-width: 100%; overflow-x: auto; font-size: 0.875rem; line-height: 1.6; }
+.prose :is(th, td) { padding: 12px 16px; text-align: start; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+.prose th { font-weight: 500; color: var(--md-sys-color-on-surface-variant); background: var(--md-sys-color-surface-container); }
+.prose [data-mintfolio-table-scroll] { max-width: 100%; overflow-x: auto; border-radius: var(--md-sys-shape-corner-medium); box-shadow: inset 0 0 0 1px var(--md-sys-color-outline-variant); }
+.prose [data-mintfolio-table-scroll] > table { display: table; max-width: none; overflow: visible; }
+
+/* Core's password form inside a protected article. */
+.prose .mintfolio-protected { padding: 24px; border-radius: var(--md-sys-shape-corner-large); background: var(--md-sys-color-surface-container-low); }
+.prose .mintfolio-protected input {
+  height: 56px; padding: 0 16px; min-width: 0; max-width: 100%;
+  border: 1px solid var(--md-sys-color-outline); border-radius: var(--md-sys-shape-corner-extra-small);
+  background: transparent; color: var(--md-sys-color-on-surface); font: 400 1rem/1.5rem var(--md-ref-typeface-plain);
+}
+.prose .mintfolio-protected input:focus { outline: none; border: 2px solid var(--md-sys-color-primary); padding-inline: 15px; }
+.prose .mintfolio-protected button {
+  height: 40px; padding: 0 24px; border: 0; border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary);
+  font: 500 0.875rem/1.25rem var(--md-ref-typeface-plain); cursor: pointer;
+}
+.prose .mintfolio-protected [role="alert"] { color: var(--md-sys-color-error) !important; font-weight: 500; }

@@ -3,36 +3,61 @@ import type { PageProps, StaticPageData } from '@mintfolio/core/astro';
 import Image from '@mintfolio/core/components/Image.astro';
 import type { MaterialSettings } from '../settings';
 import MaterialLayout from '../layouts/MaterialLayout.astro';
+import Button from '../components/Button.astro';
+import { formatDate } from '../lib/format';
+import { socialIcon } from '../lib/icons';
 
 interface Props extends PageProps<MaterialSettings, StaticPageData> {}
 const { theme, page } = Astro.props;
-const updated = page.updatedAt ? new Intl.DateTimeFormat(theme.site.language, { dateStyle: 'long', timeZone: theme.site.blog?.timezone ?? 'UTC' }).format(new Date(page.updatedAt)) : undefined;
+const updated = page.updatedAt ? formatDate(page.updatedAt, theme.site.language, theme.site.blog?.timezone) : undefined;
+const skills = theme.site.skills.filter((group) => group.items.length > 0);
 ---
 <MaterialLayout theme={theme} page={page}>
-  <div class="shell inner-page static-page">
-    <header class="page-heading">
-      <p class="eyebrow">{page.id === 'about' ? '关于作者' : '独立页面'}</p>
-      <h1>{page.title}<span class="accent-dot" aria-hidden="true">.</span></h1>
-      <p class="page-description">{page.description}</p>
-      {updated && <p class="post-meta">更新于 <time datetime={page.updatedAt}>{updated}</time></p>}
+  <div class="page">
+    <header class="page-header">
+      <p class="overline md-typescale-label-large">{page.id === 'about' ? '关于' : '页面'}{page.preview && ' · 本地预览'}</p>
+      <h1 class="page-header__title md-typescale-display-small">{page.title}</h1>
+      {page.description && <p class="page-header__supporting md-typescale-body-large">{page.description}</p>}
+      {updated && <p class="supporting md-typescale-label-large">更新于 <time datetime={page.updatedAt}>{updated}</time></p>}
     </header>
-    {page.body ? <article class="prose standalone-prose" set:html={page.body.html} /> : page.id === 'about' && <>
-      <section class="profile-intro" aria-labelledby="profile-heading">
-        <div class="profile-image"><Image src={page.profile.avatar} alt={`${page.profile.name}的头像`} width={360} height={360} /></div>
-        <div><p class="eyebrow">你好</p><h2 id="profile-heading">{page.profile.name}</h2><p class="profile-location">{page.profile.location}</p><p class="profile-bio">{page.profile.bio}</p>
-          <nav class="profile-links" aria-label="联系作者">{theme.site.contact.email && <a href={`mailto:${theme.site.contact.email}`}>发送邮件 ↗</a>}{theme.site.social.map((social) => <a href={social.url} rel="me">{social.platform} ↗</a>)}</nav>
+
+    {page.body ? <article class="prose article-body" style="max-width: var(--app-measure)" set:html={page.body.html} /> : page.id === 'about' && <>
+      <section class="md-card md-card--filled about-profile section" aria-labelledby="profile-heading">
+        <Image class="about-profile__avatar" src={page.profile.avatar} alt={`${page.profile.name}的头像`} width={240} height={240} />
+        <div class="about-profile__text">
+          <h2 id="profile-heading" class="md-typescale-headline-medium">{page.profile.name}</h2>
+          {page.profile.location && <p class="supporting md-typescale-body-medium">{page.profile.location}</p>}
+          {page.profile.bio && <p class="md-typescale-body-large">{page.profile.bio}</p>}
+          <div class="button-row">
+            {theme.site.contact.email && <Button href={`mailto:${theme.site.contact.email}`} variant="filled" icon="mail">发送邮件</Button>}
+            {theme.site.social.map((social) => { const { name, brand } = socialIcon(social); return <Button href={social.url} variant="outlined" rel="me" icon={name} brand={brand}>{social.platform}</Button>; })}
+          </div>
         </div>
       </section>
-      {theme.site.skills.length > 0 && <section class="profile-section" aria-labelledby="skills-heading">
-        <div class="section-heading"><p class="eyebrow">技能与工具</p><h2 id="skills-heading">日常工具箱</h2></div>
-        <div class="skills-grid">{theme.site.skills.map((group) => <div><h3>{group.category}</h3><ul>{group.items.map((item) => <li>{item.name}</li>)}</ul></div>)}</div>
+
+      {skills.length > 0 && <section class="section" aria-labelledby="skills-heading">
+        <div class="section-header"><h2 id="skills-heading" class="md-typescale-headline-small">技能与工具</h2></div>
+        <div class="card-grid card-grid--two">
+          {skills.map((group) => <div class="md-card md-card--outlined skill-card">
+            <h3 class="md-typescale-title-medium">{group.category}</h3>
+            <ul class="md-chip-set">{group.items.map((item) => <li><span class="md-chip">{item.name}</span></li>)}</ul>
+          </div>)}
+        </div>
       </section>}
-      {theme.site.projects.length > 0 && <section class="profile-section" aria-labelledby="projects-heading">
-        <div class="section-heading"><p class="eyebrow">项目</p><h2 id="projects-heading">做过的事情</h2></div>
-        <div class="project-list">{theme.site.projects.map((project, index) => <article class="project-row">
-          <span class="row-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-          <div><h3>{project.title}</h3><p>{project.description}</p><ul class="project-tags">{project.tags.map((tag) => <li>{tag}</li>)}</ul><div class="project-links">{project.link && <a href={project.link}>访问项目 ↗</a>}{project.repo && <a href={project.repo}>查看源码 ↗</a>}</div></div>
-        </article>)}</div>
+
+      {theme.site.projects.length > 0 && <section class="section" aria-labelledby="projects-heading">
+        <div class="section-header"><h2 id="projects-heading" class="md-typescale-headline-small">项目</h2></div>
+        <div class="card-grid card-grid--two">
+          {theme.site.projects.map((project) => <article class="md-card md-card--outlined project-card">
+            <h3 class="md-typescale-title-large">{project.title}</h3>
+            <p class="supporting md-typescale-body-medium">{project.description}</p>
+            {project.tags.length > 0 && <ul class="md-chip-set">{project.tags.map((tag) => <li><span class="md-chip">{tag}</span></li>)}</ul>}
+            {(project.link || project.repo) && <div class="button-row">
+              {project.link && <Button href={project.link} variant="text" icon="open_in_new">访问项目</Button>}
+              {project.repo && <Button href={project.repo} variant="text" icon="code">查看源码</Button>}
+            </div>}
+          </article>)}
+        </div>
       </section>}
     </>}
   </div>

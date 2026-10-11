@@ -1,0 +1,27 @@
+---
+/**
+ * Inline icon, decorative by default; pass `label` when the icon carries meaning alone.
+ * `name` is any Material Symbol (Rounded); `filled` picks its filled style, as a
+ * selected navigation destination uses. `brand` is a Simple Icons slug and wins over
+ * `name`. Unknown names fall back to a generic icon. Icons are tinted with currentColor.
+ */
+import { brandSvg, symbolSvg, warnMissingIcon } from '../lib/icon-data';
+interface Props { name?: string; brand?: string; filled?: boolean; label?: string; class?: string }
+const { name, brand, filled = false, label, class: className } = Astro.props;
+
+let raw: string | null = null;
+if (brand) {
+  raw = brandSvg(brand);
+  if (!raw) warnMissingIcon('brand', brand);
+}
+if (!raw && name) {
+  raw = symbolSvg(name, filled);
+  if (!raw) warnMissingIcon('Material Symbols', name);
+}
+raw ??= symbolSvg(brand ? 'link' : 'bookmark', filled)!;
+
+const attributes = `class="md-icon${className ? ' ' + className : ''}" ${label ? `role="img" aria-label="${label.replace(/"/g, '&quot;')}"` : 'aria-hidden="true"'} focusable="false"`;
+// Size comes from CSS (--md-icon-size); drop the intrinsic 1em size Iconify adds.
+const svg = raw.replace(/ (width|height)="[^"]*"/g, '').replace('<svg ', `<svg ${attributes} `);
+---
+<Fragment set:html={svg} />

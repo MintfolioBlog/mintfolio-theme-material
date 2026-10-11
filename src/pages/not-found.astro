@@ -3,17 +3,20 @@ import type { NotFoundPageData, PageProps } from '@mintfolio/core/astro';
 import SearchPanel from '@mintfolio/core/components/SearchPanel.astro';
 import type { MaterialSettings } from '../settings';
 import MaterialLayout from '../layouts/MaterialLayout.astro';
+import Button from '../components/Button.astro';
 
 interface Props extends PageProps<MaterialSettings, NotFoundPageData> {}
 const { theme, page } = Astro.props;
 ---
 <MaterialLayout theme={theme} page={page}>
-  <section class="shell not-found">
-    <p class="eyebrow">页面未找到</p>
-    <div class="lost-number" aria-hidden="true">4<span>0</span>4</div>
-    <h1>{page.title || '暂时找不到这个页面'}</h1>
-    <p>这个地址没有对应的页面。可以返回首页，或者搜索你想读的内容。</p>
-    <div class="hero-actions"><a class="primary-link" href={theme.urls.home()}>返回首页 <span aria-hidden="true">↗</span></a><a class="quiet-link" href={theme.urls.archive()}>浏览文章 →</a></div>
-    <div class="lost-search"><SearchPanel /></div>
+  <section class="page not-found">
+    <p class="not-found__code md-typescale-display-large" aria-hidden="true">404</p>
+    <h1 class="md-typescale-headline-medium">{page.title || '暂时找不到这个页面'}</h1>
+    <p class="supporting md-typescale-body-large">这个地址没有对应的页面。可以返回首页，或者搜索你想读的内容。</p>
+    <div class="button-row">
+      <Button href={theme.urls.home()} variant="filled" icon="home">返回首页</Button>
+      <Button href={theme.urls.archive()} variant="outlined">浏览文章</Button>
+    </div>
+    <div class="search-card not-found__search"><SearchPanel /></div>
   </section>
 </MaterialLayout>

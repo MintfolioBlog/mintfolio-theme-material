@@ -1,6 +1,6 @@
 {
   "name": "@mintfolio/theme-material",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Material — a mobile-first Mintfolio theme",
   "type": "module",
   "files": [
@@ -20,19 +20,22 @@
     "configTemplate": "./src/config/theme-material.config.mjs"
   },
   "peerDependencies": {
-    "astro": "^7.3.2",
-    "@mintfolio/core": "^0.3.0 || ^0.4.0"
+    "@mintfolio/core": "^0.4.1",
+    "astro": "^7.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "astro": "^7.3.2",
+    "@material/material-color-utilities": "^0.4.0",
+    "@mintfolio/core": "^0.4.1",
     "@types/node": "^22.20.2",
-    "@mintfolio/core": "^0.3.0 || ^0.4.0",
+    "astro": "^7.3.2",
+    "esbuild": "^0.28.2",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "scripts": {
     "check": "astro check",
-    "deps:update": "node tools/update-local-deps.mjs"
+    "deps:update": "node tools/update-local-deps.mjs",
+    "colors:bundle": "node tools/bundle-color-utilities.mjs"
   },
   "license": "GPL-3.0-only",
   "engines": {
@@ -49,5 +52,12 @@
   "homepage": "https://github.com/MintfolioBlog/mintfolio-theme-material#readme",
   "bugs": {
     "url": "https://github.com/MintfolioBlog/mintfolio-theme-material/issues"
+  },
+  "dependencies": {
+    "@fontsource-variable/roboto": "^5.3.0",
+    "@iconify-json/material-symbols": "^1.2.95",
+    "@iconify/utils": "^3.1.7",
+    "@material/web": "^2.5.0",
+    "simple-icons": "^16.34.0"
   }
 }

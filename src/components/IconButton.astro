@@ -1,0 +1,12 @@
+---
+/** Material 3 standard icon button as a link: 40px container, 24px icon, 48px touch target. */
+import Icon from './Icon.astro';
+import type { IconName } from '../lib/icons';
+interface Props { href: string; icon: IconName; label: string; class?: string; id?: string; rel?: string }
+const { href, icon, label, class: className, id, rel } = Astro.props;
+---
+<a href={href} id={id} rel={rel} class:list={['md-icon-button', className]} aria-label={label} title={label}>
+  <md-focus-ring aria-hidden="true"></md-focus-ring>
+  <md-ripple aria-hidden="true"></md-ripple>
+  <Icon name={icon} />
+</a>
