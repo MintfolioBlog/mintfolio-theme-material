@@ -1,0 +1,19 @@
+---
+/**
+ * Material 3 chip as a link. "assist" for actions such as tags; "filter" for
+ * taxonomy filters, where `selected` swaps to the secondary-container role
+ * and a leading check, as the filter chip spec describes.
+ */
+import Icon from './Icon.astro';
+import type { IconName } from '../lib/icons';
+interface Props { href: string; kind?: 'assist' | 'filter'; selected?: boolean; icon?: IconName; count?: number }
+const { href, kind = 'assist', selected = false, icon, count } = Astro.props;
+const leading = kind === 'filter' && selected ? 'check' : icon;
+---
+<a href={href} class:list={['md-chip', `md-chip--${kind}`, { 'md-chip--selected': selected, 'md-chip--with-icon': leading }]} aria-current={selected ? 'page' : undefined}>
+  <md-focus-ring aria-hidden="true"></md-focus-ring>
+  <md-ripple aria-hidden="true"></md-ripple>
+  {leading && <Icon name={leading} />}
+  <span class="md-chip__label"><slot /></span>
+  {count !== undefined && <span class="md-chip__count">{count}</span>}
+</a>

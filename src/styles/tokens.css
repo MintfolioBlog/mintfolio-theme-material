@@ -1,0 +1,87 @@
+/*
+ * Material 3 system tokens. Values are copied from @material/web's versioned
+ * token files (tokens/versions/v0_192: md-sys-shape, md-sys-motion, md-sys-state,
+ * md-sys-elevation). Color roles (--md-sys-color-*) are generated per site by
+ * src/lib/color.ts; the typescale comes from @material/web's md-typescale-styles.css.
+ */
+:root {
+  /* Typeface: Roboto for Latin text, then platform CJK fonts (Material has no CJK Roboto). */
+  --md-ref-typeface-brand: 'Roboto Variable', Roboto, 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+  --md-ref-typeface-plain: var(--md-ref-typeface-brand);
+  --md-ref-typeface-mono: 'Roboto Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+
+  /* Shape */
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 9999px;
+
+  /* Motion: easing */
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
+
+  /* Motion: duration */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-duration-long3: 550ms;
+  --md-sys-motion-duration-long4: 600ms;
+
+  /* State layer opacity */
+  --md-sys-state-hover-state-layer-opacity: 0.08;
+  --md-sys-state-focus-state-layer-opacity: 0.12;
+  --md-sys-state-pressed-state-layer-opacity: 0.12;
+  --md-sys-state-dragged-state-layer-opacity: 0.16;
+
+  /* Elevation levels, as md-elevation expects (0–5 ↔ 0/1/3/6/8/12 dp). */
+  --md-sys-elevation-level0: 0;
+  --md-sys-elevation-level1: 1;
+  --md-sys-elevation-level2: 2;
+  --md-sys-elevation-level3: 3;
+  --md-sys-elevation-level4: 4;
+  --md-sys-elevation-level5: 5;
+
+  /* Window size classes: compact < 600, medium 600–839, expanded 840–1199, large ≥ 1200. */
+  --app-margin: 16px;
+  --app-content-max: 1040px;
+  --app-measure: 720px;
+  --navigation-rail-width: 80px;
+  --navigation-bar-height: 80px;
+  --top-app-bar-height: 64px;
+
+  /* Core widgets read these. */
+  --mintfolio-search-color: var(--md-sys-color-on-surface);
+  --mintfolio-search-border: var(--md-sys-color-outline-variant);
+  --mintfolio-search-background: var(--md-sys-color-surface-container-high);
+  --mintfolio-search-result-background: var(--md-sys-color-surface);
+  --mintfolio-search-accent: var(--md-sys-color-primary);
+  --mintfolio-search-highlight: var(--md-sys-color-tertiary-container);
+  --mintfolio-search-highlight-color: var(--md-sys-color-on-tertiary-container);
+  --mintfolio-search-radius: var(--md-sys-shape-corner-medium);
+  --mintfolio-pagination-color: var(--md-sys-color-on-surface-variant);
+  --mintfolio-pagination-border: var(--md-sys-color-outline-variant);
+  --mintfolio-pagination-background: transparent;
+  --mintfolio-pagination-active-background: var(--md-sys-color-secondary-container);
+  --mintfolio-pagination-active-color: var(--md-sys-color-on-secondary-container);
+  --mintfolio-pagination-radius: var(--md-sys-shape-corner-full);
+  --mintfolio-pagination-focus: var(--md-sys-color-secondary);
+}
+
+@media (min-width: 600px) {
+  :root { --app-margin: 24px; }
+}

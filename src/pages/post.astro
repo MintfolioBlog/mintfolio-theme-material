@@ -4,37 +4,71 @@ import Image from '@mintfolio/core/components/Image.astro';
 import ProtectedArticle from '@mintfolio/core/components/ProtectedArticle.astro';
 import type { MaterialSettings } from '../settings';
 import MaterialLayout from '../layouts/MaterialLayout.astro';
-import Meta from '../components/Meta.astro';
 import ArticleConnections from '../components/ArticleConnections.astro';
+import Chip from '../components/Chip.astro';
+import Icon from '../components/Icon.astro';
+import { formatDate } from '../lib/format';
 
 interface Props extends PageProps<MaterialSettings, PostPageData> {}
 const { theme, page } = Astro.props;
+const { post } = page;
+const language = theme.site.language;
+const timezone = theme.site.blog?.timezone;
 const protectedBody = page.body.kind === 'protected' ? page.body : undefined;
-const headings = page.body.kind === 'public' ? page.body.headings.filter((heading) => heading.depth <= 3) : [];
+const headings = page.body.kind === 'public' ? page.body.headings.filter((heading) => heading.depth === 2 || heading.depth === 3) : [];
+const isUpdated = Boolean(post.updatedAt && post.updatedAt !== post.publishedAt);
 ---
-<MaterialLayout theme={theme} page={page}>
-  <div class="shell inner-page article-page">
-    <a class="back-link" href={theme.urls.archive()}>← 返回文章归档</a>
-    <header class="article-heading">
-      <p class="eyebrow"><a href={page.post.category.url}>{page.post.category.label}</a>{page.post.pinned && <span class="state-label">置顶</span>}</p>
-      <h1>{page.post.title}</h1>
-      <p class="article-deck">{page.post.description}</p>
-      <Meta post={page.post} language={theme.site.language} timezone={theme.site.blog?.timezone} />
-      {page.post.tags.length > 0 && <nav class="article-tags" aria-label="文章标签">{page.post.tags.map((tag) => <a href={tag.url}>#{tag.label}</a>)}</nav>}
+<MaterialLayout theme={theme} page={page} back={{ href: theme.urls.archive(), label: '返回文章列表' }}>
+  <div class="page">
+    <header class="article-header">
+      <p class="overline md-typescale-label-large">
+        <a href={post.category.url}>{post.category.label}</a>
+        {post.pinned && <span> · 置顶</span>}
+        {post.preview && <span> · 本地预览</span>}
+      </p>
+      <h1 class="article-header__title page-header__title md-typescale-display-small">{post.title}</h1>
+      {post.description && <p class="article-header__deck md-typescale-body-large">{post.description}</p>}
+      <div class="article-meta md-typescale-label-large">
+        {post.authors && post.authors.length > 0 && <span><Icon name="person" />
+          {post.authors.map((author, index) => <Fragment>{index > 0 && '、'}{author.url ? <a href={author.url} rel="author">{author.name}</a> : author.name}</Fragment>)}
+        </span>}
+        <span><Icon name="calendar_today" /><time datetime={post.publishedAt}>{formatDate(post.publishedAt, language, timezone)}</time></span>
+        {isUpdated && <span><Icon name="edit_calendar" />更新于 <time datetime={post.updatedAt}>{formatDate(post.updatedAt!, language, timezone)}</time></span>}
+        {post.readingMinutes !== undefined && <span><Icon name="schedule" />{post.readingMinutes} 分钟</span>}
+        {post.wordCount !== undefined && <span><Icon name="article" />{new Intl.NumberFormat(language).format(post.wordCount)} 字</span>}
+        {post.protected && <span><Icon name="lock" />加密文章</span>}
+      </div>
+      {post.tags.length > 0 && <ul class="md-chip-set" aria-label="文章标签">
+        {post.tags.map((tag) => <li><Chip href={tag.url} icon="sell">{tag.label}</Chip></li>)}
+      </ul>}
     </header>
-    {page.post.cover && <div class="article-cover"><Image src={page.post.cover} alt="" width={1600} height={900} loading="eager" /></div>}
+
+    {post.cover && <div class="article-cover"><Image src={post.cover} alt="" width={1600} height={900} loading="eager" /></div>}
+
     <div class:list={['reading-layout', { 'with-toc': headings.length > 0 }]}>
       <article class="article-body">
-        {page.body.kind === 'public' ? <div class="prose" set:html={page.body.html} />
+        {page.body.kind === 'public'
+          ? <div class="prose" set:html={page.body.html} />
           : protectedBody && <div class="prose"><ProtectedArticle body={protectedBody} /></div>}
       </article>
-      {headings.length > 0 && <aside class="article-sidebar">
-        <details class="article-toc" open>
-          <summary>本页目录</summary>
-          <nav aria-label="文章目录"><ol>{headings.map((heading) => <li class:list={{ 'toc-nested': heading.depth > 2 }}><a href={'#' + encodeURIComponent(heading.slug)}>{heading.text}</a></li>)}</ol></nav>
+      {headings.length > 0 && <aside class="toc-aside" aria-label="本页目录">
+        <details class="md-card md-card--outlined toc" data-toc>
+          <summary class="md-typescale-title-small"><Icon name="toc" />本页目录<Icon name="keyboard_arrow_down" class="toc__chevron" /></summary>
+          <nav aria-label="文章目录">
+            <ol class="md-typescale-label-large">
+              {headings.map((heading) => <li>
+                <a class:list={['toc-link', { 'toc-link--nested': heading.depth === 3 }]} href={'#' + encodeURIComponent(heading.slug)}>
+                  <md-focus-ring aria-hidden="true" inward></md-focus-ring>
+                  <md-ripple aria-hidden="true"></md-ripple>
+                  {heading.text}
+                </a>
+              </li>)}
+            </ol>
+          </nav>
         </details>
       </aside>}
     </div>
-    <ArticleConnections page={page} language={theme.site.language} timezone={theme.site.blog?.timezone} />
+
+    <ArticleConnections page={page} language={language} timezone={timezone} />
   </div>
 </MaterialLayout>

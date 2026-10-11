@@ -1,0 +1,23 @@
+---
+/**
+ * Material 3 small top app bar: 64px, surface; switches to surface-container
+ * once content scrolls beneath it (`data-scrolled`, set by scripts/material.ts).
+ * A back action takes the leading slot on detail pages. Search shows only on compact
+ * windows; wider windows have the rail FAB.
+ */
+import type { PageProps } from '@mintfolio/core/astro';
+import type { MaterialSettings } from '../settings';
+import IconButton from './IconButton.astro';
+interface Props extends PageProps<MaterialSettings> { back?: { href: string; label: string } }
+const { theme, back } = Astro.props;
+---
+{/* Scrolls away first; its leaving the viewport is the "content scrolled under" signal. */}
+<span class="md-top-app-bar__sentinel" data-top-app-bar-sentinel aria-hidden="true"></span>
+<header class="md-top-app-bar" data-top-app-bar transition:name="md-top-app-bar" transition:animate="none">
+  {back && <IconButton href={back.href} icon="arrow_back" label={back.label} id="top-app-bar-back" />}
+  <a class:list={['md-top-app-bar__title', 'md-typescale-title-large', { 'md-top-app-bar__title--inset': !back }]} href={theme.urls.home()}>{theme.site.title}</a>
+  <div class="md-top-app-bar__actions">
+    <IconButton href={theme.urls.archive() + '#site-search'} icon="search" label="搜索文章" class="md-top-app-bar__search" />
+    <IconButton href={theme.urls.rss()} icon="rss_feed" label="订阅 RSS" />
+  </div>
+</header>

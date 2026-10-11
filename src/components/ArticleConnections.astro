@@ -1,22 +1,52 @@
 ---
+/** Series list, previous/next and related posts below an article, as Material cards and lists. */
 import type { PostPageData } from '@mintfolio/core/astro';
-import PostRow from './PostRow.astro';
-interface Props { page: PostPageData; language?: string; timezone?: string; }
+import PostCard from './PostCard.astro';
+import Icon from './Icon.astro';
+interface Props { page: PostPageData; language?: string; timezone?: string }
 const { page, language, timezone } = Astro.props;
+const series = page.post.series;
 ---
-{page.post.series && page.seriesPosts && page.seriesPosts.length > 0 && <section class="series-section" aria-labelledby="series-heading">
-  <div class="section-heading"><p class="eyebrow">系列文章</p><h2 id="series-heading"><a href={page.post.series.url}>{page.post.series.label}</a></h2></div>
-  <ol class="series-list">{page.seriesPosts.map((post, index) => <li>
-    <span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
-    <a href={post.url} aria-current={post.id === page.post.id ? 'page' : undefined}>{post.title}</a>
-    {post.id === page.post.id && <span class="series-current">正在阅读</span>}
-  </li>)}</ol>
+{series && page.seriesPosts && page.seriesPosts.length > 0 && <section class="section md-card md-card--outlined series-card" aria-labelledby="series-heading">
+  <div class="series-card__header">
+    <Icon name="auto_stories" />
+    <div>
+      <p class="supporting md-typescale-label-medium">系列文章 · 共 {page.seriesPosts.length} 篇</p>
+      <h2 id="series-heading" class="md-typescale-title-medium"><a href={series.url}>{series.label}</a></h2>
+    </div>
+  </div>
+  <ol class="md-list">
+    {page.seriesPosts.map((post, index) => <li>
+      <a class="md-list-item" href={post.url} aria-current={post.id === page.post.id ? 'page' : undefined}>
+        <md-focus-ring aria-hidden="true" inward></md-focus-ring>
+        <md-ripple aria-hidden="true"></md-ripple>
+        <span class="series-index md-typescale-title-medium" aria-hidden="true">{index + 1}</span>
+        <span class="md-typescale-body-large">{post.title}</span>
+      </a>
+    </li>)}
+  </ol>
 </section>}
-<nav class="adjacent-posts" aria-label="相邻文章">
-  <div>{page.previous && <a href={page.previous.url}><span class="eyebrow">← 上一篇</span><strong>{page.previous.title}</strong></a>}</div>
-  <div>{page.next && <a href={page.next.url}><span class="eyebrow">下一篇 →</span><strong>{page.next.title}</strong></a>}</div>
-</nav>
-{page.related && page.related.length > 0 && <section class="related-section" aria-labelledby="related-heading">
-  <div class="section-heading"><p class="eyebrow">继续阅读</p><h2 id="related-heading">你可能还想读</h2></div>
-  <div>{page.related.map((post, index) => <PostRow post={post} number={index + 1} language={language} timezone={timezone} />)}</div>
+
+{(page.previous || page.next) && <nav class="adjacent" aria-label="相邻文章">
+  {page.previous ? <a class="md-card md-card--outlined adjacent__card" href={page.previous.url} rel="prev">
+    <md-elevation aria-hidden="true"></md-elevation>
+    <md-focus-ring aria-hidden="true"></md-focus-ring>
+    <md-ripple aria-hidden="true"></md-ripple>
+    <Icon name="arrow_back" />
+    <span class="adjacent__text"><span class="supporting md-typescale-label-medium">上一篇</span><span class="md-typescale-title-medium">{page.previous.title}</span></span>
+  </a> : <span></span>}
+  {page.next && <a class="md-card md-card--outlined adjacent__card adjacent__card--next" href={page.next.url} rel="next">
+    <md-elevation aria-hidden="true"></md-elevation>
+    <md-focus-ring aria-hidden="true"></md-focus-ring>
+    <md-ripple aria-hidden="true"></md-ripple>
+    <Icon name="arrow_forward" />
+    <span class="adjacent__text"><span class="supporting md-typescale-label-medium">下一篇</span><span class="md-typescale-title-medium">{page.next.title}</span></span>
+  </a>}
+</nav>}
+
+{page.related && page.related.length > 0 && <section class="section related" aria-labelledby="related-heading">
+  <div class="section-header"><h2 id="related-heading" class="md-typescale-headline-small">继续阅读</h2></div>
+  <div class="card-grid card-grid--two">
+    {page.related.map((post) => <PostCard post={post} variant="outlined" context="related" language={language} timezone={timezone} />)}
+  </div>
 </section>}
