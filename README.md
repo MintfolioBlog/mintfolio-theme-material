@@ -10,24 +10,24 @@
 
 要求 Node.js >= 22.12、Mintfolio Core 0.3.x、Astro 7.3.x。本次发行版本为 0.3.0。
 
-将 artifacts/mintfolio-theme-material-0.3.0.tgz 复制到你的站点目录，再运行：
+将 artifacts/mintfolio-theme-material-0.3.1.tgz 复制到你的站点目录，再运行：
 
 ~~~sh
-npm install ./mintfolio-theme-material-0.3.0.tgz
+npm install ./mintfolio-theme-material-0.3.1.tgz
 mintfolio theme use @mintfolio/theme-material
 mintfolio dev
 ~~~
 
-不要把 npm scope 简写为主题目录名。切换后 Core 创建 theme-material.config.mjs，支持：
+不要把 npm scope 简写为主题目录名。切换后 Core 会在 theme.config.mjs 的 settings 中写入带注释的设置，支持：
 
 ~~~js
-export default {
+settings: {
   appearance: 'system', // system / light / dark
   heroEyebrow: '想法 · 日常 · 新发现',
   heroTitle: '把好奇心，写成日常。',
   heroDescription: '', // 空字符串使用站点描述
 
-};
+},
 ~~~
 
 网站资料、导航、文章和分页继续在原有站点配置中维护。首页展示首篇文章和随后最多六篇文章，“查看全部”进入归档。
@@ -72,3 +72,6 @@ https://github.com/material-components/material-components-android/blob/master/d
 ## 0.3.0 发行
 
 主题包与 manifest 统一为 0.3.0，依赖 Mintfolio Core ^0.3.0。可使用 npm install @mintfolio/theme-material@0.3.0 安装，随后使用 mintfolio theme use @mintfolio/theme-material 切换。
+
+
+0.3.1：支持 Core 0.4，配置示例采用 `_mintfolio/theme.config.mjs` 的 `settings`。Core 0.3 用户仍按该版本的配置方式使用。
