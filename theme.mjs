@@ -1,7 +1,7 @@
 import { defineTheme } from '@mintfolio/core/theme';
 export default defineTheme({
   manifest: {
-    id: 'material', name: 'Material', version: '0.3.0', engine: '^1.1.0',
+    id: 'material', name: 'Material', version: '0.4.0', engine: '^1.1.0',
     author: 'Mintfolio contributors', description: '遵循 Material 3 Expressive 的自适应个人博客主题。'
   },
   capabilities: { encryptedPosts: true, search: true, tags: true, categories: true, toc: true },
