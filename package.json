@@ -1,10 +1,11 @@
 {
   "name": "@mintfolio/theme-material",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Material — a mobile-first Mintfolio theme",
   "type": "module",
   "files": [
     "theme.mjs",
+    "examples",
     "src",
     "README.md",
     "DESIGN.md",
@@ -20,13 +21,13 @@
     "configTemplate": "./src/config/theme-material.config.mjs"
   },
   "peerDependencies": {
-    "@mintfolio/core": "^0.4.1",
+    "@mintfolio/core": "^0.4.2",
     "astro": "^7.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
     "@material/material-color-utilities": "^0.4.0",
-    "@mintfolio/core": "^0.4.1",
+    "@mintfolio/core": "^0.4.2",
     "@types/node": "^22.20.2",
     "astro": "^7.3.2",
     "esbuild": "^0.28.2",

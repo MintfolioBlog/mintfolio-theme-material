@@ -2,13 +2,13 @@
  * Progressive enhancement only: every page reads and navigates without this file.
  * - Registers the official @material/web primitives used by the markup:
  *   <md-ripple> (state layer + ripple), <md-focus-ring>, <md-elevation>.
- * - Top app bar "on scroll" state, bottom sheet dismissal, TOC position, back action.
+ * - Top app bar "on scroll" state, bottom sheet dismissal and back action. Article TOC loads separately.
  * Core's onPage scope releases every listener and observer on navigation.
  */
 import '@material/web/ripple/ripple.js';
 import '@material/web/focus/md-focus-ring.js';
 import '@material/web/elevation/elevation.js';
-import { onPage } from '@mintfolio/core/client';
+import { onPage } from '@mintfolio/core/client/lifecycle';
 import type { TransitionBeforeSwapEvent } from 'astro:transitions/client';
 
 // Native focus outlines stay until md-focus-ring can replace them.
@@ -48,11 +48,18 @@ onPage('[data-top-app-bar]', (bar, scope) => {
   // Return to the previous same-site page when there is one; the link target is the fallback.
   const back = document.getElementById('top-app-bar-back');
   back?.addEventListener('click', (event) => {
+    // Modified clicks must retain the native link action (new tab/window).
+    if (!(event instanceof MouseEvent) || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.defaultPrevented) return;
     // ClientRouter numbers its history entries; a positive index means an in-app page precedes this one.
     const index: unknown = history.state?.index;
     let sameSite = typeof index === 'number' && index > 0;
     if (!sameSite) {
-      try { sameSite = new URL(document.referrer).origin === location.origin && history.length > 1; } catch { /* no referrer */ }
+      try {
+        const referrer = new URL(document.referrer);
+        const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+        const inBase = !base || referrer.pathname === base || referrer.pathname.startsWith(base + '/');
+        sameSite = referrer.origin === location.origin && inBase && history.length > 1;
+      } catch { /* no referrer */ }
     }
     if (!sameSite) return;
     event.preventDefault();
@@ -74,36 +81,4 @@ onPage('[data-bottom-sheet]', (root, scope) => {
     document.documentElement.toggleAttribute('data-sheet-open', sheet.open);
   }, { signal: scope.signal });
   scope.add(() => document.documentElement.removeAttribute('data-sheet-open'));
-});
-
-onPage('[data-toc]', (toc, scope) => {
-  // Collapsed in markup so narrow windows don't jump; the large-window sidebar starts expanded.
-  if (matchMedia('(min-width: 1200px)').matches) (toc as HTMLDetailsElement).open = true;
-  const links = new Map<Element, HTMLAnchorElement>();
-  for (const link of toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')) {
-    const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
-    if (target) links.set(target, link);
-  }
-  if (links.size === 0) return;
-  const visible = new Set<Element>();
-  const mark = (): void => {
-    // The first heading still on screen is current; once all have scrolled past, keep the last one.
-    const headings = [...links.keys()];
-    const current = headings.find((heading) => visible.has(heading))
-      ?? headings.filter((heading) => heading.getBoundingClientRect().top < 0).at(-1)
-      ?? headings[0];
-    for (const [heading, link] of links) {
-      if (heading === current) link.setAttribute('aria-current', 'location');
-      else link.removeAttribute('aria-current');
-    }
-  };
-  const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) visible.add(entry.target);
-      else visible.delete(entry.target);
-    }
-    mark();
-  }, { rootMargin: '-72px 0px -55% 0px' });
-  for (const heading of links.keys()) observer.observe(heading);
-  scope.add(() => observer.disconnect());
 });

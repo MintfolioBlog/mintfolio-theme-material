@@ -12,12 +12,12 @@
 
 ## 安装
 
-要求 Node.js >= 22.12、Mintfolio Core 0.3.x 或 0.4.x、Astro 7.3.x。
+要求 Node.js >= 22.12、Mintfolio Core >= 0.4.2（0.4.x）及 Theme API >= 1.4.0（1.x）、Astro 7.3.x。
 
-将 artifacts/mintfolio-theme-material-0.4.0.tgz 复制到你的站点目录，再运行：
+将 artifacts/mintfolio-theme-material-0.4.1.tgz 复制到你的站点目录，再运行：
 
 ~~~sh
-npm install ./mintfolio-theme-material-0.4.0.tgz
+npm install ./mintfolio-theme-material-0.4.1.tgz
 mintfolio theme use @mintfolio/theme-material
 mintfolio dev
 ~~~
@@ -25,6 +25,8 @@ mintfolio dev
 不要把 npm scope 简写为主题目录名。主题依赖的 `@material/web`、图标库和 Roboto 会随主题一起从 npm 安装，不使用 CDN。
 
 ## 设置
+
+完整示例见 [examples/theme.config.mjs](examples/theme.config.mjs)：列出全部设置项，逐项注明用途、默认值和可选值，可以直接复制为站点的 `_mintfolio/theme.config.mjs`。
 
 切换后 Core 会在 theme.config.mjs 的 settings 中写入带注释的设置：
 
@@ -84,7 +86,7 @@ npm run colors:bundle    # 升级 @material/material-color-utilities 后重新�
 
 ## 版本记录
 
-- 0.4.0：支持 Core 0.4，配置示例采用 `_mintfolio/theme.config.mjs` 的 `settings`。Core 0.3 用户仍按该版本的配置方式使用。
+- 0.4.0：支持 Core 0.4，配置示例采用 `_mintfolio/theme.config.mjs` 的 `settings`。该历史版本的配置方式以对应版本文档为准。
 - 0.3.0：主题包与 manifest 统一为 0.3.0，依赖 Mintfolio Core ^0.3.0。
 
 ## 站点 favicon（Core 0.4.1 / Theme API 1.3 起）
@@ -104,3 +106,7 @@ site: {
 部署子目录由 Core 根据 Astro base 自动添加，无需每次更改图标路径。所有页面（包括 404 和其他内置兜底页）使用同一站点图标，切换主题后继续保留。自定义图标会替换整组主题默认图标，不会同时输出两者。浏览器可能缓存旧图标，更新后可改用 `'/favicon.ico?v=2'`。
 
 命令行也支持 `mintfolio config set site site.favicon /favicon.ico`；设为空字符串可恢复默认。此功能需安装包含该能力的 Core 与主题版本；只升级主题而继续使用旧 Core 不会生效。
+
+## Core 0.4.2 兼容性
+
+客户端通过 Core 的独立 lifecycle 入口管理 Astro 导航和页面资源释放；目录脚本仅由文章页加载。普通页面不会因主题自身的生命周期脚本引入全文搜索、文章解锁等控制器。导航链接由 Core 统一处理部署子目录，选中状态兼容末尾斜杠。主题复用 Core 的 ProtectedArticle 与 SearchPanel，密码解锁及搜索继续由 Core 管理。

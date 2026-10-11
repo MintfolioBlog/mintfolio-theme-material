@@ -18,10 +18,16 @@ const archive = theme.urls.archive();
 const searchHref = archive + '#site-search';
 
 interface Destination { label: string; url: string; icon: string; selected: boolean }
-// Root-relative links get the deployment base. urls.asset() arrived with Core 0.4; Core 0.3 lacks it.
-const withBase = (url: string): string => typeof theme.urls.asset === 'function'
-  ? theme.urls.asset(url)
-  : url.startsWith('/') && !url.startsWith('//') ? import.meta.env.BASE_URL.replace(/\/$/, '') + url : url;
+// Core owns base-prefix normalization for both custom navigation and assets.
+const withBase = (url: string): string => theme.urls.asset(url);
+// Astro can serve equivalent routes with or without a trailing slash.
+const destinationKey = (url: string): string => {
+  try {
+    const parsed = new URL(url, theme.site.url);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return url;
+    return parsed.origin + parsed.pathname.replace(/\/+$/u, '') + parsed.search + parsed.hash;
+  } catch { return url; }
+};
 // Theme setting first: the owner picks icon, link and label for every destination.
 const configured = theme.settings.navigation
   .filter((item) => item.url.trim() && item.label.trim())
@@ -29,14 +35,16 @@ const configured = theme.settings.navigation
 // Otherwise the site navigation, with home and the archive guaranteed and icons inferred.
 const links = configured.length > 0 ? configured : theme.navigation.map((link) => ({ label: link.label, url: link.url, icon: '' }));
 if (configured.length === 0) {
-  if (!links.some((link) => link.url === home)) links.unshift({ label: '首页', url: home, icon: '' });
-  if (!links.some((link) => link.url === archive)) links.splice(1, 0, { label: '文章', url: archive, icon: '' });
+  if (!links.some((link) => destinationKey(link.url) === destinationKey(home))) links.unshift({ label: '首页', url: home, icon: '' });
+  if (!links.some((link) => destinationKey(link.url) === destinationKey(archive))) links.splice(1, 0, { label: '文章', url: archive, icon: '' });
 }
 // Posts and taxonomy pages keep their parent destination selected, as hierarchy navigation expects.
 const sectionUrl = page.kind === 'post' || page.kind === 'archive' ? archive : page.url;
 const destinations: Destination[] = links.map((link) => {
-  const icon = link.icon || navigationIcon(link, { home, archive });
-  return { ...link, icon, selected: link.url === sectionUrl || link.url === page.url };
+  const key = destinationKey(link.url);
+  const iconUrl = key === destinationKey(home) ? home : key === destinationKey(archive) ? archive : link.url;
+  const icon = link.icon || navigationIcon({ ...link, url: iconUrl }, { home, archive });
+  return { ...link, icon, selected: destinationKey(link.url) === destinationKey(sectionUrl) || destinationKey(link.url) === destinationKey(page.url) };
 });
 const BAR_LIMIT = 5;
 const overflow = destinations.length > BAR_LIMIT;
